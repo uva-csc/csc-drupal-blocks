@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function csc_site_blocks_theme() {
+  return [
+    'csc_skewed_block' => [
+      'variables' => [
+        'bgcolor' => '',
+        'divheight' => '',
+        'skewheight' => '',
+        'angle' => '',
+        'marginbottom' => '',
+      ],
+    ],
+  ];
+}
+
