@@ -29,6 +29,8 @@ class CscSkewedBlock extends BlockBase {
     $height = !empty($config['height']) ? $config['height'] : '600';
     $angle = !empty($config['angle']) ? $config['angle'] : '-7';
     $margbot = !empty($config['marginbottom']) ? $config['marginbottom'] : '-200';
+    $hgt = $height * 1;
+    $skewheight = $hgt * 0.56;
 
 
     // Return the text to be displayed in the block.
@@ -36,7 +38,7 @@ class CscSkewedBlock extends BlockBase {
       '#theme' => 'csc_skewed_block',
       '#bgcolor' => $bgcolor,
       '#divheight' => $height,
-      '#skewheight' => $height * 1 - 250,
+      '#skewheight' => $skewheight,
       '#angle' => $angle,
       '#marginbottom' => $margbot,
     ];
