@@ -21,6 +21,7 @@ class CscSkewedBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build(): array {
+
     // Retrieve the configuration for this block instance.
     $config = $this->getConfiguration();
 
@@ -109,10 +110,11 @@ class CscSkewedBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function blockAccess(AccountInterface $account) {
+    return AccessResult::allowed();
     // Check if the current user has access to the block.
     // You can implement your access logic here.
     // For example, you can check user roles or permissions.
-    if ($account->hasPermission('administer blocks')) {
+    if ($account->hasPermission('view published content')) {
       // Grant access if the user has the necessary permission.
       return AccessResult::allowed();
     }
