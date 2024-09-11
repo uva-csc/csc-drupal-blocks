@@ -31,7 +31,7 @@ function csc_site_blocks_theme() {
 function csc_site_blocks_views_post_execute(ViewExecutable $view) {
   // For Event Row Teasers display (block_2) the events block at the bottom of every page,
   // filter out identical nodes and display a maximum of 8
-  $bids = ['block_2', 'block_4']; // Events column copy = , 'block_6'
+  $bids = ['block_2', 'block_4']; // Events column copy = , 'block_6' // , 'dropins'
   if ($view->id() == 'events' && in_array($view->current_display, $bids)) {
     $eids = [];
     $temp_results = [];
@@ -43,7 +43,7 @@ function csc_site_blocks_views_post_execute(ViewExecutable $view) {
         $eids[] = $eid;
       }
     }
-    $view->result = array_slice($temp_results, 0, 12);  // Trim results to 8
+    $view->result = count($temp_results) > 12 ? array_slice($temp_results, 0, 12) : $temp_results;  // Trim results to 8
   }
 }
 
