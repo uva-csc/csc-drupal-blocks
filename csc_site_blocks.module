@@ -31,7 +31,8 @@ function csc_site_blocks_theme() {
 function csc_site_blocks_views_post_execute(ViewExecutable $view) {
   // For Event Row Teasers display (block_2) the events block at the bottom of every page,
   // filter out identical nodes and display a maximum of 8
-  if ($view->id() == 'events' && $view->current_display == 'block_2') {
+  $bids = ['block_2', 'block_4']; // Events column copy = , 'block_6'
+  if ($view->id() == 'events' && in_array($view->current_display, $bids)) {
     $eids = [];
     $temp_results = [];
     foreach($view->result as $key => $row) {
@@ -42,10 +43,9 @@ function csc_site_blocks_views_post_execute(ViewExecutable $view) {
         $eids[] = $eid;
       }
     }
-    $view->result = array_slice($temp_results, 0, 8);  // Trim results to 8
+    $view->result = array_slice($temp_results, 0, 12);  // Trim results to 8
   }
 }
-
 
 function csc_logit($msg='no message sent to log function', $ltype='notice', $sufx='') {
   if (strlen($sufx) > 0) { $sufx = " $sufx"; }
