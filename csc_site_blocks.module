@@ -28,6 +28,7 @@ function csc_site_blocks_theme() {
  *
  * @return void
  */
+/*
 function csc_site_blocks_views_post_execute(ViewExecutable $view) {
   // For Event Row Teasers display (block_2) the events block at the bottom of every page,
   // filter out identical nodes and display a maximum of 8
@@ -45,7 +46,7 @@ function csc_site_blocks_views_post_execute(ViewExecutable $view) {
     }
     $view->result = count($temp_results) > 12 ? array_slice($temp_results, 0, 12) : $temp_results;  // Trim results to 8
   }
-}
+}*/
 
 function csc_logit($msg='no message sent to log function', $ltype='notice', $sufx='') {
   if (strlen($sufx) > 0) { $sufx = " $sufx"; }
