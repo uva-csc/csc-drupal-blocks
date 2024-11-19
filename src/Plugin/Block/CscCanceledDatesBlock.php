@@ -30,38 +30,21 @@ class CscCanceledDatesBlock extends BlockBase {
 
       // Get the first item value (in case of multi-value fields).
       $date_field_value = $smart_date_field->first()->getValue();
-      // csc_log(json_encode($date_field_value));
-      /*
-      if (isset($date_field_value['rrule'])) {
-        csc_log("The Rule OVerrids");
-        $smart_date_rule = SmartDateRule::load($date_field_value['rrule']);
-        $start_date = new DrupalDateTime('-1 year'); // Start date (e.g., today)
-        $end_date = new DrupalDateTime('+1 year'); // End date (e.g., 1 year from now)
-        $instances = $smart_date_rule->makeRuleInstances($start_date, $end_date)->toArray();
-        csc_log("instances: " . json_encode($instances));
-
-        $rid = $date_field_value['rrule'];
-        $database = Database::getConnection();
-
-        // Perform a query to fetch rows where entity_index = 3.
-        $query = $database->select('smart_date_rule', 'd')
-          ->fields('d')
-          ->condition('rid', $rid, '=');
-
-        // Execute the query.
-        $result = $query->execute();
-
-        // Fetch all rows as associative arrays.
-        $rows = $result->fetchAllAssoc('rid');
-        csc_log("Table rows: " . json_encode($rows));
-      }*/
+      if (!empty($date_field_value['rrule'])) {
+        $rrule = SmartDateRule::load($date_field_value['rrule']);
+        $instances = $rrule->makeRuleInstances();
+        $ovrds = $rrule->getRuleOverrides();
+        foreach($ovrds as $ind => $ovrd) {
+          $instance = $instances[$ind];
+          $canceled_dates[] = $instance->getStart()->format('M j');
+        }
+      }
 
       // Return the canceled dates if they exist.
       if (!empty($canceled_dates)) {
         return [
-          '#theme' => 'item_list',
-          '#items' => $canceled_dates,
-          '#title' => $this->t('Canceled Dates'),
+          '#theme' => 'csc_canceled_dates_block',
+          '#canceled_dates' => implode(", ", $canceled_dates),
         ];
       }
     }
