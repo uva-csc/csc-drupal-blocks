@@ -24,25 +24,51 @@ class CscCanceledDatesBlock extends BlockBase {
     $node = \Drupal::routeMatch()->getParameter('node');
 
     if ($node instanceof EntityInterface && $node->hasField('field_date')) {
-      // Retrieve the recurring date field.
-      $smart_date_field = $node->get('field_date');
-      $canceled_dates = [];
 
-      // Get the first item value (in case of multi-value fields).
-      $date_field_value = $smart_date_field->first()->getValue();
-      $instances = null;
-      $ovrds = null;
-      if (!empty($date_field_value['rrule'])) {
-        $rrule = SmartDateRule::load($date_field_value['rrule']);
-        $instances = $rrule->makeRuleInstances();
-        $ovrds = $rrule->getRuleOverrides();
-        foreach($ovrds as $ind => $ovrd) {
-          // csc_log('')
-          $adjind = ($ind > 0) ? $ind - 1 : 0;  // All exception dates were one off toward the future. This works but not sure why.
-          $instance = $instances[$adjind];
-          $canceled_dates[] = $instance->getStart()->format('M j');
+      // Iterate through the items in the Smart date field and extract the cancelled dates
+      $smart_date_field = $node->get('field_date'); // Retrieve the recurring date field.
+      $canceled_dates = [];
+      foreach ($smart_date_field as $item) {
+        $date_field_value = $item->getValue(); // Get the value for the current item.
+
+        if (!empty($date_field_value['rrule'])) {
+          $rrule = SmartDateRule::load($date_field_value['rrule']);
+          $instances = $rrule->makeRuleInstances();
+          $ovrds = $rrule->getRuleOverrides();
+
+          foreach ($ovrds as $ind => $ovrd) {
+            // Adjust index to match the correct instance.
+            $adjind = ($ind > 0) ? $ind - 1 : 0;
+            $instance = $instances[$adjind];
+            // $canceled_dates[] = $instance->getStart()->format('M j');
+            $start_date = $instance->getStart(); // Get the start date as a DateTime object.
+
+            // Check if the date is already in the array.
+            $exists = false;
+            foreach ($canceled_dates as $date) {
+              if ($date->format('Y-m-d') === $start_date->format('Y-m-d')) {
+                $exists = true;
+                break;
+              }
+            }
+
+            // Add to the array if it doesn't exist.
+            if (!$exists) {
+              $canceled_dates[] = $start_date;
+            }
+          }
         }
       }
+
+      // Sort the array by date.
+      usort($canceled_dates, function ($a, $b) {
+        return $a <=> $b; // Compare DateTime objects.
+      });
+
+      // Convert sorted dates back to the desired format.
+      $canceled_dates = array_map(function ($date) {
+        return $date->format('M j');
+      }, $canceled_dates);
 
       // Return the canceled dates if they exist.
       if (!empty($canceled_dates)) {
