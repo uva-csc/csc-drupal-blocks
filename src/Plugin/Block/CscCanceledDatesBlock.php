@@ -30,12 +30,16 @@ class CscCanceledDatesBlock extends BlockBase {
 
       // Get the first item value (in case of multi-value fields).
       $date_field_value = $smart_date_field->first()->getValue();
+      $instances = null;
+      $ovrds = null;
       if (!empty($date_field_value['rrule'])) {
         $rrule = SmartDateRule::load($date_field_value['rrule']);
         $instances = $rrule->makeRuleInstances();
         $ovrds = $rrule->getRuleOverrides();
         foreach($ovrds as $ind => $ovrd) {
-          $instance = $instances[$ind];
+          // csc_log('')
+          $adjind = ($ind > 0) ? $ind - 1 : 0;  // All exception dates were one off toward the future. This works but not sure why.
+          $instance = $instances[$adjind];
           $canceled_dates[] = $instance->getStart()->format('M j');
         }
       }
