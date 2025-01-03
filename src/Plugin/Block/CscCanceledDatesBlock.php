@@ -41,20 +41,22 @@ class CscCanceledDatesBlock extends BlockBase {
             $adjind = ($ind > 0) ? $ind - 1 : 0;
             $instance = $instances[$adjind];
             // $canceled_dates[] = $instance->getStart()->format('M j');
-            $start_date = $instance->getStart(); // Get the start date as a DateTime object.
+            if(!empty($instance)) {
+              $start_date = $instance->getStart(); // Get the start date as a DateTime object.
 
-            // Check if the date is already in the array.
-            $exists = false;
-            foreach ($canceled_dates as $date) {
-              if ($date->format('Y-m-d') === $start_date->format('Y-m-d')) {
-                $exists = true;
-                break;
+              // Check if the date is already in the array.
+              $exists = false;
+              foreach ($canceled_dates as $date) {
+                if ($date->format('Y-m-d') === $start_date->format('Y-m-d')) {
+                  $exists = true;
+                  break;
+                }
               }
-            }
 
-            // Add to the array if it doesn't exist.
-            if (!$exists) {
-              $canceled_dates[] = $start_date;
+              // Add to the array if it doesn't exist.
+              if (!$exists) {
+                $canceled_dates[] = $start_date;
+              }
             }
           }
         }
