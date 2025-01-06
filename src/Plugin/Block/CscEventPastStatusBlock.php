@@ -28,15 +28,12 @@ class CscEventPastStatusBlock extends BlockBase {
 
     if ($node instanceof NodeInterface && $node->getType() === 'event') {
       $end_timestamp = 0; // end_timestamp the greatest timestamp value of field_date if there is no field_end_date
-      csc_log("Calculating End date for: " . $node->getTitle());
       if (!$node->get('field_end_date')->isEmpty()) {
         $end_timestamp = strtotime($node->get('field_end_date')->value); // This field_end_date value is a date string
-        csc_log("End field has value: " . $end_timestamp);
       } else if (!$node->get('field_date')->isEmpty()) {
         // Loop through all field_date items to find greatest end time
         foreach ($node->get('field_date')->getValue() as $date_item) {
           $item_end_timestamp = $date_item['end_value']; // This value is already a timestamp
-          csc_log("Item End ts: " . $item_end_timestamp);
           // Check if this end date is greater than the current greatest timestamp.
           if ($item_end_timestamp > $end_timestamp) {
             $end_timestamp = $item_end_timestamp;
@@ -47,7 +44,6 @@ class CscEventPastStatusBlock extends BlockBase {
       // Get the current timestamp.
       $current_timestamp = strtotime('-1 day');
 
-      csc_log('----------- Calculation done! -----------');
       // Check if the event is in the past.
       if ($end_timestamp < $current_timestamp ) {
         $output = [
