@@ -2,6 +2,7 @@
 namespace Drupal\csc_site_blocks\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\smart_date_recur\Entity\SmartDateRule;
 use Drupal\Core\Datetime\DrupalDateTime;
@@ -80,7 +81,9 @@ class CscCanceledDatesBlock extends BlockBase {
       if (!empty($canceled_dates)) {
         return [
           '#theme' => 'csc_canceled_dates_block',
-          '#canceled_dates' => implode(", ", $canceled_dates),
+          '#canceled_dates' => Markup::create(
+            implode(", ", array_map(fn($date) => '<span class="text-nowrap">' . $date . '</span>', $canceled_dates))
+          ),
         ];
       }
     }
@@ -108,7 +111,7 @@ function groupDateRanges(array $dates): array {
       // Break in sequence
       $ranges[] = ($start == $prev)
         ? $start->format('M d')
-        : $start->format('M d') . '–' . $prev->format('M d');
+        : '<span class="text-nowrap">' . $start->format('M d') . '–' . $prev->format('M d'). '</span>';
 
       $start = $prev = $current;
     }
@@ -117,8 +120,7 @@ function groupDateRanges(array $dates): array {
   // Add the last range
   $ranges[] = ($start == $prev)
     ? $start->format('M d')
-    : $start->format('M d') . '–' . $prev->format('M d');
-
+    :  '<span class="text-nowrap">' . $start->format('M d') . '–' . $prev->format('M d'). '</span>';
   return $ranges;
 }
 
