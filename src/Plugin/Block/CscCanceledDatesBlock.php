@@ -62,15 +62,19 @@ class CscCanceledDatesBlock extends BlockBase {
         }
       }
 
+
       // Sort the array by date.
       usort($canceled_dates, function ($a, $b) {
         return $a <=> $b; // Compare DateTime objects.
       });
 
-      // Convert sorted dates back to the desired format.
-      $canceled_dates = array_map(function ($date) {
-        return $date->format('M j');
-      }, $canceled_dates);
+/*
+      \Drupal::logger('csc_site_blocks')->error('<pre>@data</pre>', [
+        '@data' => print_r($canceled_dates, TRUE),
+      ]);
+*/
+
+      $canceled_dates = groupDateRanges($canceled_dates);
 
       // Return the canceled dates if they exist.
       if (!empty($canceled_dates)) {
@@ -85,4 +89,37 @@ class CscCanceledDatesBlock extends BlockBase {
     return [];
   }
 }
+
+function groupDateRanges(array $dates): array {
+  // Sort the dates
+  usort($dates, fn($a, $b) => $a <=> $b);
+
+  $ranges = [];
+  $start = $prev = $dates[0];
+
+  for ($i = 1; $i < count($dates); $i++) {
+    $current = $dates[$i];
+    $interval = $prev->diff($current)->days;
+
+    if ($interval === 1) {
+      // Still in a consecutive range
+      $prev = $current;
+    } else {
+      // Break in sequence
+      $ranges[] = ($start == $prev)
+        ? $start->format('M d')
+        : $start->format('M d') . '–' . $prev->format('M d');
+
+      $start = $prev = $current;
+    }
+  }
+
+  // Add the last range
+  $ranges[] = ($start == $prev)
+    ? $start->format('M d')
+    : $start->format('M d') . '–' . $prev->format('M d');
+
+  return $ranges;
+}
+
 
