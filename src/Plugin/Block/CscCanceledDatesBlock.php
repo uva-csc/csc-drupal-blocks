@@ -25,7 +25,6 @@ class CscCanceledDatesBlock extends BlockBase {
     $node = \Drupal::routeMatch()->getParameter('node');
 
     if ($node instanceof EntityInterface && $node->hasField('field_date')) {
-
       // Iterate through the items in the Smart date field and extract the cancelled dates
       $smart_date_field = $node->get('field_date'); // Retrieve the recurring date field.
       $canceled_dates = [];
@@ -42,14 +41,14 @@ class CscCanceledDatesBlock extends BlockBase {
             $adjind = ($ind > 0) ? $ind - 1 : 0;
             $instance = $instances[$adjind];
             // $canceled_dates[] = $instance->getStart()->format('M j');
-            if(!empty($instance)) {
+            if (!empty($instance)) {
               $start_date = $instance->getStart(); // Get the start date as a DateTime object.
 
               // Check if the date is already in the array.
-              $exists = false;
+              $exists = FALSE;
               foreach ($canceled_dates as $date) {
                 if ($date->format('Y-m-d') === $start_date->format('Y-m-d')) {
-                  $exists = true;
+                  $exists = TRUE;
                   break;
                 }
               }
@@ -63,31 +62,31 @@ class CscCanceledDatesBlock extends BlockBase {
         }
       }
 
-
       // Sort the array by date.
-      usort($canceled_dates, function ($a, $b) {
+      usort($canceled_dates, function($a, $b) {
         return $a <=> $b; // Compare DateTime objects.
       });
 
-/*
-      \Drupal::logger('csc_site_blocks')->error('<pre>@data</pre>', [
-        '@data' => print_r($canceled_dates, TRUE),
-      ]);
-*/
+      /*
+            \Drupal::logger('csc_site_blocks')->error('<pre>@data</pre>', [
+              '@data' => print_r($canceled_dates, TRUE),
+            ]);
+      */
 
-      $canceled_dates = groupDateRanges($canceled_dates);
+      if (count($canceled_dates) > 0) {
+        $canceled_dates = groupDateRanges($canceled_dates);
 
-      // Return the canceled dates if they exist.
-      if (!empty($canceled_dates)) {
-        return [
-          '#theme' => 'csc_canceled_dates_block',
-          '#canceled_dates' => Markup::create(
-            implode(", ", array_map(fn($date) => '<span class="text-nowrap">' . $date . '</span>', $canceled_dates))
-          ),
-        ];
+        // Return the canceled dates if they exist.
+        if (!empty($canceled_dates)) {
+          return [
+            '#theme' => 'csc_canceled_dates_block',
+            '#canceled_dates' => Markup::create(
+              implode(", ", array_map(fn($date) => '<span class="text-nowrap">' . $date . '</span>', $canceled_dates))
+            ),
+          ];
+        }
       }
     }
-
     // Default message if no canceled dates are found.
     return [];
   }
