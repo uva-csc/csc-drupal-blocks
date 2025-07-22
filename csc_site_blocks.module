@@ -16,6 +16,14 @@ function csc_site_blocks_theme() {
         'marginbottom' => '',
       ],
     ],
+    'calendar_link_block' => [
+      'variables' => [
+        'message' => '',
+        'node' => null,
+        'dates' => [],
+      ],
+      'template' => 'calendar-link-block',
+    ],
   ];
 }
 

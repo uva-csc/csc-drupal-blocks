@@ -1,0 +1,30 @@
+<!-- Add to Calendar Link Template -->
+{% if node.body.summary is not empty %}
+  {% set desc = node.body.summary %}
+{% else %}
+  {% set desc = node.body.value|striptags|slice(0, 300) ~ '...' %}
+{% endif %}
+{% set links = calendar_links(node.title, dates[0].start, dates[0].end, dates[0].all_day, desc, node.field_location.entity.label ) %}
+
+<div class="calendar-link-block dropdown">
+  <!--button class="btn btn-primary dropdown-toggle" type="button" id="dropdownFormButton" data-bs-toggle="dropdown" aria-expanded="false">
+    {{ message }}
+  </button-->
+  <a class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ message }}</a>
+  <div class="dropdown-menu p-4" style="min-width: 300px;">
+    <ul class="list-unstyled">
+      {% for link in links %}
+        {% if link.type_key == 'google' and dates[0].rrule %}
+          {% set repstr = '&recur=' ~ dates[0].rrule ~ '&ctz=' %}
+          <li>
+            <a href="{{ link.url|replace({'&ctz=': repstr}) }}" class="calendar-link-{{ link.type_key }}">{{ link.type_name }}</a>
+          </li>
+        {% else %}
+          <li>
+            <a href="{{ link.url }}" class="calendar-link-{{ link.type_key }}">{{ link.type_name }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</div>
