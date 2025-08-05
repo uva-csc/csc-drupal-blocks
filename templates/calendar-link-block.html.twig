@@ -10,18 +10,18 @@
   <!--button class="btn btn-primary dropdown-toggle" type="button" id="dropdownFormButton" data-bs-toggle="dropdown" aria-expanded="false">
     {{ message }}
   </button-->
-  <a class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ message }}</a>
-  <div class="dropdown-menu p-4" style="min-width: 300px;">
+  <a class="dropdown-toggle plain" data-bs-toggle="dropdown" aria-expanded="false">{{ message }}</a>
+  <div class="dropdown-menu" style="min-width: 300px;">
     <ul class="list-unstyled">
       {% for link in links %}
         {% if link.type_key == 'google' and dates[0].rrule %}
           {% set repstr = '&recur=' ~ dates[0].rrule ~ '&ctz=' %}
           <li>
-            <a href="{{ link.url|replace({'&ctz=': repstr}) }}" class="calendar-link-{{ link.type_key }}">{{ link.type_name }}</a>
+            <a href="{{ link.url|replace({'&ctz=': repstr}) }}" class="calendar-link {{ link.type_key }} plain" target="_blank">{{ link.type_name }}</a>
           </li>
         {% else %}
           <li>
-            <a href="{{ link.url }}" class="calendar-link-{{ link.type_key }}">{{ link.type_name }}</a>
+            <a href="{{ link.url }}" class="calendar-link {{ link.type_key }} plain" target="_blank">{{ link.type_name }}</a>
           </li>
         {% endif %}
       {% endfor %}

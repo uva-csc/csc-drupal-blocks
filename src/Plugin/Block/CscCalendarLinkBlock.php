@@ -51,45 +51,37 @@ class CscCalendarLinkBlock extends BlockBase implements ContainerFactoryPluginIn
       $end_date = $item->end_time;     // \Drupal\Core\Datetime\DrupalDateTime
       $duration = $item->get('duration')->getValue();
       $rrid = $item->get('rrule')->getValue();
-      $rule = SmartDateRule::load($rrid);
-      $rrule = $rule->getRule();
-      if (str_contains($rrule, 'UNTIL=')) {
-        [$rule_bulk, $untilval] = explode('UNTIL=', $rrule);
-        if (strlen($untilval) > 1) {
-          $date = DateTime::createFromFormat('Y-m-d\THis', $untilval, new DateTimeZone('UTC'));
-          $formatted = $date->format('Ymd\THis\Z');
-          $rrule = "{$rule_bulk}UNTIL={$formatted}";
+      $rrule = FALSE;
+      if (!empty($rrid)) {
+        $rule = SmartDateRule::load($rrid);
+        $rrule = $rule->getRule();
+        if (str_contains($rrule, 'UNTIL=')) {
+          [$rule_bulk, $untilval] = explode('UNTIL=', $rrule);
+          if (strlen($untilval) > 1) {
+            $date = DateTime::createFromFormat('Y-m-d\THis', $untilval, new DateTimeZone('UTC'));
+            $formatted = $date->format('Ymd\THis\Z');
+            $rrule = "{$rule_bulk}UNTIL={$formatted}";
+          }
         }
       }
-      $date = array();
+
+      $date = [];
+
       if ($start_date) {
-        $date = array(
+        $date = [[
           'start' => $start_date,
           'end' => $end_date,
           'rrule' => $rrule,
           'duration' => $duration,
           'all_day' => ($duration === 1440 || $duration === 86400),
-        );
+        ]];
       }
 
-      /*
-      foreach ($date_items as $item) {
-
-          $dates[] = [
-            'start' => $start_date,
-            'end' => $end_date,
-            'rrule' => $rrule,
-            'duration' => $duration,
-            'all_day' => ($duration === 1440 || $duration === 86400),
-          ];
-        }
-      }*/
-      // csc_log("returning node interface");
       return [
         '#theme' => 'calendar_link_block',
         '#message' => 'Add to Calendar',
         '#node' => $node,
-        '#dates' => [$date],
+        '#dates' => $date,
         '#cache' => ['max-age' => 0],
       ];
     }
