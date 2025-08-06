@@ -21,7 +21,7 @@
           </li>
         {% else %}
           <li>
-            <a href="{{ link.url }}" class="calendar-link {{ link.type_key }} plain" target="_blank">{{ link.type_name }}</a>
+            <a href="{{ link.url|replace({'&ctz=UTZ': '&ctz=America/New_York'}) }} }}" class="calendar-link {{ link.type_key }} plain" target="_blank">{{ link.type_name }}</a>
           </li>
         {% endif %}
       {% endfor %}
