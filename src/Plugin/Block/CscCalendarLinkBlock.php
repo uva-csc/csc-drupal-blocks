@@ -55,10 +55,13 @@ class CscCalendarLinkBlock extends BlockBase implements ContainerFactoryPluginIn
       $end_date = new DrupalDateTime($end_str, new DateTimeZone('America/New_York'));;     // \Drupal\Core\Datetime\DrupalDateTime
       $duration = $item->get('duration')->getValue();
       $rrid = $item->get('rrule')->getValue();
+
       $rrule = FALSE;
       if (!empty($rrid)) {
+        csc_log('rrid: ' . $rrid);
         $rule = SmartDateRule::load($rrid);
         $rrule = $rule->getRule();
+        csc_log('rrule: ' . $rrule);
         if (str_contains($rrule, 'UNTIL=')) {
           [$rule_bulk, $untilval] = explode('UNTIL=', $rrule);
           if (strlen($untilval) > 1) {
