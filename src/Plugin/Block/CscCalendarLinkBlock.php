@@ -3,6 +3,7 @@ namespace Drupal\csc_site_blocks\Plugin\Block;
 
 use DateTime;
 use DateTimeZone;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -47,8 +48,11 @@ class CscCalendarLinkBlock extends BlockBase implements ContainerFactoryPluginIn
       // csc_log("Node class: " . get_class($node));
       $date_items = $node->get('field_date');
       $item = $date_items[0];
-      $start_date = $item->start_time; // \Drupal\Core\Datetime\DrupalDateTime
-      $end_date = $item->end_time;     // \Drupal\Core\Datetime\DrupalDateTime
+      // $item->start_time is  \Drupal\Core\Datetime\DrupalDateTime
+      $sd_str = $item->start_time->format('Y-m-d H:i:s');
+      $start_date = new DrupalDateTime($sd_str, new DateTimeZone('America/New_York'));
+      $end_str = $item->end_time->format('Y-m-d H:i:s');
+      $end_date = new DrupalDateTime($end_str, new DateTimeZone('America/New_York'));;     // \Drupal\Core\Datetime\DrupalDateTime
       $duration = $item->get('duration')->getValue();
       $rrid = $item->get('rrule')->getValue();
       $rrule = FALSE;
