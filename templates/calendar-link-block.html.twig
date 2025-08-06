@@ -17,11 +17,11 @@
         {% if link.type_key == 'google' and dates[0].rrule %}
           {% set repstr = '&recur=' ~ dates[0].rrule ~ '&ctz=America/New_York' %}
           <li>
-            <a href="{{ link.url|replace({'&ctz=UTZ': repstr}) }}" class="calendar-link {{ link.type_key }} plain" target="_blank">{{ link.type_name }}</a>
+            <a href="{{ link.url|replace({'&ctz=UTC': repstr}) }}" class="calendar-link {{ link.type_key }} plain" target="_blank">{{ link.type_name }}</a>
           </li>
         {% else %}
           <li>
-            <a href="{{ link.url|replace({'&ctz=UTZ': '&ctz=America/New_York'}) }} }}" class="calendar-link {{ link.type_key }} plain" target="_blank">{{ link.type_name }}</a>
+            <a href="{{ link.url|replace({'&ctz=UTC': '&ctz=America/New_York'}) }} }}" class="calendar-link {{ link.type_key }} plain" target="_blank">{{ link.type_name }}</a>
           </li>
         {% endif %}
       {% endfor %}
