@@ -19,7 +19,7 @@
           <li>
             <a href="{{ link.url|replace({'&ctz=UTC': repstr}) }}" class="calendar-link {{ link.type_key }} plain">{{ link.type_name }}</a>
           </li>
-        {% else if link.type_key == 'webOffice' %}
+        {% elseif link.type_key == 'webOffice' %}
           <li>
             <a href="{{ link.url|replace({'0Z&': '0-04:00&'}) }}" class="calendar-link {{ link.type_key }} plain">{{ link.type_name }}</a>
           </li>
