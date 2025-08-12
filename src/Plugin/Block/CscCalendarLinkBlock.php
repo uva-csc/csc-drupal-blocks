@@ -58,10 +58,10 @@ class CscCalendarLinkBlock extends BlockBase implements ContainerFactoryPluginIn
 
       $rrule = FALSE;
       if (!empty($rrid)) {
-        csc_log('rrid: ' . $rrid);
+        // csc_log('rrid: ' . $rrid);
         $rule = SmartDateRule::load($rrid);
         $rrule = $rule->getRule();
-        csc_log('rrule: ' . $rrule);
+        // csc_log('rrule: ' . $rrule);
         if (str_contains($rrule, 'UNTIL=')) {
           [$rule_bulk, $untilval] = explode('UNTIL=', $rrule);
           if (strlen($untilval) > 1) {
