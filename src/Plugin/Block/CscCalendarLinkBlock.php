@@ -43,54 +43,57 @@ class CscCalendarLinkBlock extends BlockBase implements ContainerFactoryPluginIn
 
   public function build() {
     $node = $this->routeMatch->getParameter('node');
-
     if ($node instanceof NodeInterface) {
       // csc_log("Node class: " . get_class($node));
       $date_items = $node->get('field_date');
       $item = $date_items[0];
       // $item->start_time is  \Drupal\Core\Datetime\DrupalDateTime
-      $sd_str = $item->start_time->format('Y-m-d H:i:s');
-      $start_date = new DrupalDateTime($sd_str, new DateTimeZone('America/New_York'));
-      $end_str = $item->end_time->format('Y-m-d H:i:s');
-      $end_date = new DrupalDateTime($end_str, new DateTimeZone('America/New_York'));;     // \Drupal\Core\Datetime\DrupalDateTime
-      $duration = $item->get('duration')->getValue();
-      $rrid = $item->get('rrule')->getValue();
+      if (isset($item->start_time)) {
+        $sd_str = $item->start_time->format('Y-m-d H:i:s');
+        $start_date = new DrupalDateTime($sd_str, new DateTimeZone('America/New_York'));
+        $end_str = $item->end_time->format('Y-m-d H:i:s');
+        $end_date = new DrupalDateTime($end_str, new DateTimeZone('America/New_York'));;     // \Drupal\Core\Datetime\DrupalDateTime
+        $duration = $item->get('duration')->getValue();
+        $rrid = $item->get('rrule')->getValue();
 
-      $rrule = FALSE;
-      if (!empty($rrid)) {
-        // csc_log('rrid: ' . $rrid);
-        $rule = SmartDateRule::load($rrid);
-        $rrule = $rule->getRule();
-        // csc_log('rrule: ' . $rrule);
-        if (str_contains($rrule, 'UNTIL=')) {
-          [$rule_bulk, $untilval] = explode('UNTIL=', $rrule);
-          if (strlen($untilval) > 1) {
-            $date = DateTime::createFromFormat('Y-m-d\THis', $untilval, new DateTimeZone('UTC'));
-            $formatted = $date->format('Ymd\THis\Z');
-            $rrule = "{$rule_bulk}UNTIL={$formatted}";
+        $rrule = FALSE;
+        if (!empty($rrid)) {
+          // csc_log('rrid: ' . $rrid);
+          $rule = SmartDateRule::load($rrid);
+          $rrule = $rule->getRule();
+          // csc_log('rrule: ' . $rrule);
+          if (str_contains($rrule, 'UNTIL=')) {
+            [$rule_bulk, $untilval] = explode('UNTIL=', $rrule);
+            if (strlen($untilval) > 1) {
+              $date = DateTime::createFromFormat('Y-m-d\THis', $untilval, new DateTimeZone('UTC'));
+              $formatted = $date->format('Ymd\THis\Z');
+              $rrule = "{$rule_bulk}UNTIL={$formatted}";
+            }
           }
         }
+
+        $date = [];
+
+        if ($start_date) {
+          $date = [
+            [
+              'start' => $start_date,
+              'end' => $end_date,
+              'rrule' => $rrule,
+              'duration' => $duration,
+              'all_day' => ($duration === 1440 || $duration === 86400),
+            ]
+          ];
+        }
+
+        return [
+          '#theme' => 'calendar_link_block',
+          '#message' => 'Add to Calendar',
+          '#node' => $node,
+          '#dates' => $date,
+          '#cache' => ['max-age' => 0],
+        ];
       }
-
-      $date = [];
-
-      if ($start_date) {
-        $date = [[
-          'start' => $start_date,
-          'end' => $end_date,
-          'rrule' => $rrule,
-          'duration' => $duration,
-          'all_day' => ($duration === 1440 || $duration === 86400),
-        ]];
-      }
-
-      return [
-        '#theme' => 'calendar_link_block',
-        '#message' => 'Add to Calendar',
-        '#node' => $node,
-        '#dates' => $date,
-        '#cache' => ['max-age' => 0],
-      ];
     }
     return [];
   }

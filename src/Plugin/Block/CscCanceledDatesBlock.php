@@ -33,29 +33,31 @@ class CscCanceledDatesBlock extends BlockBase {
 
         if (!empty($date_field_value['rrule'])) {
           $rrule = SmartDateRule::load($date_field_value['rrule']);
-          $instances = $rrule->makeRuleInstances();
-          $ovrds = $rrule->getRuleOverrides();
+          if ($rrule) {
+            $instances = $rrule->makeRuleInstances();
+            $ovrds = $rrule->getRuleOverrides();
 
-          foreach ($ovrds as $ind => $ovrd) {
-            // Adjust index to match the correct instance.
-            $adjind = ($ind > 0) ? $ind - 1 : 0;
-            $instance = $instances[$adjind];
-            // $canceled_dates[] = $instance->getStart()->format('M j');
-            if (!empty($instance)) {
-              $start_date = $instance->getStart(); // Get the start date as a DateTime object.
+            foreach ($ovrds as $ind => $ovrd) {
+              // Adjust index to match the correct instance.
+              $adjind = ($ind > 0) ? $ind - 1 : 0;
+              $instance = $instances[$adjind];
+              // $canceled_dates[] = $instance->getStart()->format('M j');
+              if (!empty($instance)) {
+                $start_date = $instance->getStart(); // Get the start date as a DateTime object.
 
-              // Check if the date is already in the array.
-              $exists = FALSE;
-              foreach ($canceled_dates as $date) {
-                if ($date->format('Y-m-d') === $start_date->format('Y-m-d')) {
-                  $exists = TRUE;
-                  break;
+                // Check if the date is already in the array.
+                $exists = FALSE;
+                foreach ($canceled_dates as $date) {
+                  if ($date->format('Y-m-d') === $start_date->format('Y-m-d')) {
+                    $exists = TRUE;
+                    break;
+                  }
                 }
-              }
 
-              // Add to the array if it doesn't exist.
-              if (!$exists) {
-                $canceled_dates[] = $start_date;
+                // Add to the array if it doesn't exist.
+                if (!$exists) {
+                  $canceled_dates[] = $start_date;
+                }
               }
             }
           }
