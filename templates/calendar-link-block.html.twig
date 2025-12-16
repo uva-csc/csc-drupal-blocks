@@ -8,10 +8,9 @@
 {% set links = calendar_links(node.title, dates[0].start, dates[0].end, dates[0].all_day, desc, node.field_location.entity.label ) %}
 
 <div class="calendar-link-block dropdown">
-  <!--button class="btn btn-primary dropdown-toggle" type="button" id="dropdownFormButton" data-bs-toggle="dropdown" aria-expanded="false">
+  <button class="btn btn-outline dropdown-toggle" type="button" id="dropdownFormButton" data-bs-toggle="dropdown" aria-expanded="false">
     {{ message }}
-  </button-->
-  <a class="dropdown-toggle plain" data-bs-toggle="dropdown" aria-expanded="false">{{ message }}</a>
+  </button>
   <div class="dropdown-menu" style="min-width: 300px;">
     <ul class="list-unstyled">
       {% for link in links %}
