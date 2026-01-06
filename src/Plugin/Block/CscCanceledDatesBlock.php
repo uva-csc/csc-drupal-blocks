@@ -111,8 +111,8 @@ function groupDateRanges(array $dates): array {
     } else {
       // Break in sequence
       $ranges[] = ($start == $prev)
-        ? $start->format('M d')
-        : '<span class="text-nowrap">' . $start->format('M d') . '–' . $prev->format('M d'). '</span>';
+        ? $start->format('M j')
+        : '<span class="text-nowrap">' . $start->format('M j') . '–' . $prev->format('M j'). '</span>';
 
       $start = $prev = $current;
     }
@@ -120,8 +120,8 @@ function groupDateRanges(array $dates): array {
 
   // Add the last range
   $ranges[] = ($start == $prev)
-    ? $start->format('M d')
-    :  '<span class="text-nowrap">' . $start->format('M d') . '–' . $prev->format('M d'). '</span>';
+    ? $start->format('M j')
+    :  '<span class="text-nowrap">' . $start->format('M j') . '–' . $prev->format('M j'). '</span>';
   return $ranges;
 }
 
