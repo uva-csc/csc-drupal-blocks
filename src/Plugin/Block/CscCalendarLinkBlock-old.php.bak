@@ -51,13 +51,8 @@ class CscCalendarLinkBlock extends BlockBase implements ContainerFactoryPluginIn
       if (isset($item->start_time)) {
         $sd_str = $item->start_time->format('Y-m-d H:i:s');
         $start_date = new DrupalDateTime($sd_str, new DateTimeZone('America/New_York'));
-
-        $end_date = NULL;
-        if (isset($item->end_time)) {
-          $end_str = $item->end_time->format('Y-m-d H:i:s');
-          $end_date = new DrupalDateTime($end_str, new DateTimeZone('America/New_York'));     // \Drupal\Core\Datetime\DrupalDateTime
-        }
-
+        $end_str = $item->end_time->format('Y-m-d H:i:s');
+        $end_date = new DrupalDateTime($end_str, new DateTimeZone('America/New_York'));;     // \Drupal\Core\Datetime\DrupalDateTime
         $duration = $item->get('duration')->getValue();
         $rrid = $item->get('rrule')->getValue();
 
@@ -65,22 +60,14 @@ class CscCalendarLinkBlock extends BlockBase implements ContainerFactoryPluginIn
         if (!empty($rrid)) {
           // csc_log('rrid: ' . $rrid);
           $rule = SmartDateRule::load($rrid);
-          $rrule = $rule ? $rule->getRule() : FALSE;
+          $rrule = $rule->getRule();
           // csc_log('rrule: ' . $rrule);
-          if ($rrule && str_contains($rrule, 'UNTIL=')) {
+          if (str_contains($rrule, 'UNTIL=')) {
             [$rule_bulk, $untilval] = explode('UNTIL=', $rrule);
             if (strlen($untilval) > 1) {
-              // RRULE UNTIL values are basic iCal format: YYYYMMDDTHHMMSSZ
-              $date = DateTime::createFromFormat('Ymd\THis\Z', $untilval, new DateTimeZone('UTC'));
-              if (!$date) {
-                // Fallback in case it's ever passed in an older dashed/extended format.
-                $date = DateTime::createFromFormat('Y-m-d\THis', $untilval, new DateTimeZone('UTC'));
-              }
-              if ($date) {
-                $formatted = $date->format('Ymd\THis\Z');
-                $rrule = "{$rule_bulk}UNTIL={$formatted}";
-              }
-              // else: leave $rrule with the original (unparsed) UNTIL value rather than crashing.
+              $date = DateTime::createFromFormat('Y-m-d\THis', $untilval, new DateTimeZone('UTC'));
+              $formatted = $date->format('Ymd\THis\Z');
+              $rrule = "{$rule_bulk}UNTIL={$formatted}";
             }
           }
         }
